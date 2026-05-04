@@ -1,0 +1,7 @@
+[
+  {
+    "username": "admin",
+    "passwordHash": "pbkdf2-sha256:100000:LZ00uHi/vaA1QYMiP/nW5w==:0wir3AUniy2bdbb9XEUZFaIPj08cTLOaP\u002B0zZY6TbpQ=",
+    "createdAt": "2026-05-03T16:07:25.9134228+00:00"
+  }
+]

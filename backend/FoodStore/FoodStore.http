@@ -1,0 +1,52 @@
+@FoodStore_HostAddress = http://localhost:5175
+
+POST {{FoodStore_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+POST {{FoodStore_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "demo",
+  "password": "demo12345"
+}
+
+###
+
+@Token = paste-token-here
+
+GET {{FoodStore_HostAddress}}/api/foods
+Accept: application/json
+Authorization: Bearer {{Token}}
+
+###
+
+POST {{FoodStore_HostAddress}}/api/foods
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "name": "Riz basmati",
+  "category": "Epicerie",
+  "quantity": 2,
+  "unit": "kg",
+  "expirationDate": "2027-01-15",
+  "location": "Placard",
+  "minimumQuantity": 1,
+  "notes": "Sac ouvert"
+}
+
+###
+
+GET {{FoodStore_HostAddress}}/api/foods/summary
+Accept: application/json
+Authorization: Bearer {{Token}}
+
+###
