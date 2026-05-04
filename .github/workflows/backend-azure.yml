@@ -1,6 +1,7 @@
 name: Deploy backend to Azure
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -17,7 +18,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.1.x"
+          dotnet-version: "10.0.x"
 
       - name: Restore
         run: dotnet restore
