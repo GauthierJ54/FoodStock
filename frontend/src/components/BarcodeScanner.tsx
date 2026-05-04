@@ -76,7 +76,7 @@ export default function BarcodeScanner({ onDetected }: Props) {
         <Button type="button" asChild>
         <label>
             <Upload />
-            <input
+            <Input
             type="file"
             accept="image/*"
             className="hidden"
