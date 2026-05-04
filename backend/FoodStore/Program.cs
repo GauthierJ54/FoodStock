@@ -55,7 +55,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
-builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection(AuthOptions.SectionName));
 builder.Services.Configure<FlatFileOptions>(builder.Configuration.GetSection(FlatFileOptions.SectionName));
 
 builder.Services.AddHttpContextAccessor();

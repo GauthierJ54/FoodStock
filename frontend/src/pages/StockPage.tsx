@@ -12,6 +12,8 @@ import Navbar from "@/components/Navbar";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Pencil } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function StockPage() {
   const { token } = useAuth();
@@ -27,6 +29,8 @@ export default function StockPage() {
   const [category, setCategory] = useState("all");
   const [location, setLocation] = useState("all");
   const [sortByExpired, setSortByExpired] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const categories = [...new Set(items.map((item) => item.category))];
   const locations = [...new Set(items.map((item) => item.location))];
@@ -82,6 +86,19 @@ export default function StockPage() {
     if (diff < 0) return "expired";
     if (diff <= 3) return "soon";
     return "ok";
+  }
+
+  function Detail({ label, value }: { label: string; value: string }) {
+    return (
+      <div className="rounded-xl border border-green-100 bg-green-50 p-3">
+        <p className="text-xs font-medium uppercase text-slate-500">
+          {label}
+        </p>
+        <p className="mt-1 font-medium text-slate-900">
+          {value}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -148,7 +165,7 @@ export default function StockPage() {
                   (1000 * 60 * 60 * 24)
               );
             return (
-            <Card key={item.id} className="border-green-100 bg-white shadow-sm hover:shadow-md transition">
+            <Card key={item.id} onClick={() => {setSelectedItem(item); setIsEditMode(false);}} className="cursor-pointer border-green-100 bg-white shadow-sm transition hover:shadow-md">
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="text-slate-900">{item.name}</CardTitle>
@@ -171,7 +188,7 @@ export default function StockPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={(e) =>{ e.stopPropagation(); handleDelete(item.id); }}
                       className="text-red-500 hover:bg-red-50">
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -201,6 +218,65 @@ export default function StockPage() {
           )})}
         </div>
       </main>
+      <Dialog
+        open={!!selectedItem}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedItem(null);
+            setIsEditMode(false);
+          }
+        }}
+      >
+        <DialogContent className="border-green-100 bg-white sm:max-w-xl">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <div className="flex items-start gap-4">
+                  <DialogTitle className="text-2xl text-slate-900">
+                    {selectedItem.name}
+                  </DialogTitle>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsEditMode((prev) => !prev)}
+                    className="hover:bg-green-100"
+                  >
+                    <Pencil className="h-5 w-5 text-green-700" />
+                  </Button>
+                </div>
+              </DialogHeader>
+
+              {!isEditMode ? (
+                <div className="space-y-4 text-sm">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Detail label="Catégorie" value={selectedItem.category} />
+                    <Detail label="Quantité" value={`${selectedItem.quantity} ${selectedItem.unit}`} />
+                    <Detail label="Emplacement" value={selectedItem.location} />
+                    <Detail label="Date d’expiration" value={selectedItem.expirationDate} />
+                    <Detail label="Quantité minimum" value={selectedItem.minimumQuantity.toString()} />
+                    <Detail label="Créé le" value={new Date(selectedItem.createdAt).toLocaleString()} />
+                    <Detail label="Modifié le" value={new Date(selectedItem.updatedAt).toLocaleString()} />
+                  </div>
+
+                  {selectedItem.notes && (
+                    <div className="rounded-xl border border-green-100 bg-green-50 p-4">
+                      <p className="mb-1 text-xs font-medium uppercase text-slate-500">
+                        Notes
+                      </p>
+                      <p className="text-slate-700">{selectedItem.notes}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-slate-600">
+                  Mode édition à brancher ici.
+                </div>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
