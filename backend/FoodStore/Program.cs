@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("ReactApp", policy =>
+    options.AddPolicy("Frontend", policy =>
     {
         policy
             .WithOrigins("http://localhost:5173")
@@ -77,7 +77,7 @@ builder.Services.AddScoped<IRequestHandler<DeleteFoodCommand, ApiResult>, Delete
 builder.Services.AddScoped<IRequestHandler<GetInventorySummaryQuery, InventorySummary>, GetInventorySummaryHandler>();
 
 var app = builder.Build();
-app.UseCors("ReactApp");
+app.UseCors("Frontend");
 
 if (app.Environment.IsDevelopment())
 {
