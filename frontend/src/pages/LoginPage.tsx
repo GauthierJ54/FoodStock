@@ -1,23 +1,15 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Apple } from "lucide-react";
-
 import { useAuth } from "@/auth/useAuth";
 import { loginApi } from "@/api/authAPI";
 import { loginSchema } from "@/schemas/auth.schema";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const { login } = useAuth();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
