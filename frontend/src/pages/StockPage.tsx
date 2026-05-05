@@ -14,9 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Pencil } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 export default function StockPage() {
   const { token } = useAuth();
+  const { t } = useTranslation();
   const [items, setItems] = useState<FoodItem[]>([]);
 
   useEffect(() => {
@@ -90,7 +92,7 @@ export default function StockPage() {
 
   function Detail({ label, value }: { label: string; value: string }) {
     return (
-      <div className="rounded-xl border border-green-100 bg-green-50 p-3">
+      <div className="rounded-xl border border-green-100 bg-green-50 p-3 dark:bg-slate-800 dark:border-slate-700">
         <p className="text-xs font-medium uppercase text-slate-500">
           {label}
         </p>
@@ -102,27 +104,27 @@ export default function StockPage() {
   }
 
   return (
-    <div className="min-h-screen bg-green-50 text-slate-900">
+    <div className="min-h-screen bg-green-50 text-slate-900 dark:bg-slate-900 dark:text-slate-300">
       <Navbar />
 
       <main className="mx-auto max-w-7xl p-6">
-        <h1 className="mb-6 text-3xl font-bold">Mon stock alimentaire</h1>
+        <h1 className="mb-6 text-3xl font-bold">{t("stock.title")}</h1>
 
-        <FoodForm onSubmit={handleCreate} />
+        <FoodForm onSubmit={handleCreate} items={items} />
         <div className="mx-auto mb-6 mt-10 flex items-center gap-4">
           <Input
-            placeholder="Rechercher un aliment..."
+            placeholder={t("stock.search")}   
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border-green-300 bg-green-100/50"
+            className="border-green-300 bg-green-100/50 dark:bg-slate-700 dark:border-slate-600"
           />
 
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="border-green-300 bg-green-100/50">
-              <SelectValue placeholder="Catégorie" />
+            <SelectTrigger className="border-green-300 bg-green-100/50 dark:bg-slate-700 dark:border-slate-600">
+              <SelectValue placeholder={t("stock.category")}  />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Toutes les catégories</SelectItem>
+              <SelectItem value="all">{t("stock.allCategories")}</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
@@ -132,11 +134,11 @@ export default function StockPage() {
           </Select>
 
           <Select value={location} onValueChange={setLocation}>
-            <SelectTrigger className="border-green-300 bg-green-100/50">
-              <SelectValue placeholder="Emplacement" />
+            <SelectTrigger className="border-green-300 bg-green-100/50 dark:bg-slate-700 dark:border-slate-600">
+              <SelectValue placeholder={t("stock.location")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les emplacements</SelectItem>
+              <SelectItem value="all">{t("stock.allLocations")}</SelectItem>
               {locations.map((location) => (
                 <SelectItem key={location} value={location}>
                   {location}
@@ -148,74 +150,74 @@ export default function StockPage() {
           <Checkbox
             id="sortByExpired"
             checked={sortByExpired}
-            className="bg-green-100/50 data-[state=checked]:bg-green-600"
+            className="bg-green-100/50 data-[state=checked]:bg-green-600 dark:bg-slate-700 dark:data-[state=checked]:bg-slate-300"
             onCheckedChange={(checked) => setSortByExpired(checked === true)}
           />
           <label htmlFor="sortByExpired" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            Date d'expiration
+            {t("stock.sortByExpired")}
           </label>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => {
-              const status = getExpirationStatus(item.expirationDate)
-
-              const diffDays = Math.ceil(
-                (new Date(item.expirationDate).getTime() - new Date().getTime()) /
-                  (1000 * 60 * 60 * 24)
-              );
+            const status = getExpirationStatus(item.expirationDate)
+            const diffDays = Math.ceil(
+              (new Date(item.expirationDate).getTime() - new Date().getTime()) /
+              (1000 * 60 * 60 * 24)
+            );
             return (
-            <Card key={item.id} onClick={() => {setSelectedItem(item); setIsEditMode(false);}} className="cursor-pointer border-green-100 bg-white shadow-sm transition hover:shadow-md">
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-slate-900">{item.name}</CardTitle>
-                  <Badge
-                    className={
-                      status === "expired"
-                        ? "bg-red-100 text-red-700"
+              <Card key={item.id} onClick={() => { setSelectedItem(item); setIsEditMode(false); }} className="cursor-pointer border-green-100 bg-white shadow-sm transition hover:shadow-md dark:bg-slate-800 dark:border-slate-600 dark:hover:shadow-lg">
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-slate-900">{item.name}</CardTitle>
+                    <Badge
+                      className={
+                        status === "expired"
+                          ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                          : status === "soon"
+                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300"
+                            : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                      }
+                    >
+                      {status === "expired"
+                        ? t("expiration.expiredSince", { count: -diffDays })
                         : status === "soon"
-                        ? "bg-orange-100 text-orange-700"
-                        : "bg-green-100 text-green-700"
-                    }
-                  >
-                    {status === "expired"
-                      ? "Expiré depuis " + Math.abs(diffDays) + "j"
-                      : status === "soon"
-                      ? "Bientôt expiré dans " + diffDays + "j"
-                      : "Bon jusqu'au " + item.expirationDate}
-                  </Badge>
-                  <Badge variant="secondary">{item.category}</Badge>
+                          ? t("expiration.expiresIn", { count: diffDays })
+                          : t("expiration.ok")}
+                    </Badge>
+                    <Badge variant="secondary">{item.category}</Badge>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={(e) =>{ e.stopPropagation(); handleDelete(item.id); }}
-                      className="text-red-500 hover:bg-red-50">
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                      className="text-red-500 hover:bg-red-50 dark:hover:bg-slate-600">
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Quantité</span>
-                  <span>
-                    {item.quantity} {item.unit}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Emplacement</span>
-                  <span>{item.location}</span>
-                </div>
-
-                {item.notes && (
-                  <div className="rounded-md bg-slate-800 p-3 text-slate-300">
-                    {item.notes}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          )})}
+                </CardHeader>
+
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">{t("stock.quantity")}</span>
+                    <span>
+                      {item.quantity} {item.unit}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">{t("stock.location")}</span>
+                    <span>{item.location}</span>
+                  </div>
+
+                  {item.notes && (
+                    <div className="rounded-md bg-slate-800 p-3 text-slate-300 dark:bg-green-50 dark:text-slate-700">
+                      {item.notes}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </main>
       <Dialog
@@ -227,7 +229,7 @@ export default function StockPage() {
           }
         }}
       >
-        <DialogContent className="border-green-100 bg-white sm:max-w-xl">
+        <DialogContent className="border-green-100 bg-white sm:max-w-xl dark:bg-slate-800 dark:border-slate-600">
           {selectedItem && (
             <>
               <DialogHeader>
@@ -240,7 +242,7 @@ export default function StockPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsEditMode((prev) => !prev)}
-                    className="hover:bg-green-100"
+                    className="hover:bg-green-100 dark:hover:bg-slate-600"
                   >
                     <Pencil className="h-5 w-5 text-green-700" />
                   </Button>
@@ -250,26 +252,26 @@ export default function StockPage() {
               {!isEditMode ? (
                 <div className="space-y-4 text-sm">
                   <div className="grid grid-cols-2 gap-3">
-                    <Detail label="Catégorie" value={selectedItem.category} />
-                    <Detail label="Quantité" value={`${selectedItem.quantity} ${selectedItem.unit}`} />
-                    <Detail label="Emplacement" value={selectedItem.location} />
-                    <Detail label="Date d’expiration" value={selectedItem.expirationDate} />
-                    <Detail label="Quantité minimum" value={selectedItem.minimumQuantity.toString()} />
-                    <Detail label="Créé le" value={new Date(selectedItem.createdAt).toLocaleString()} />
-                    <Detail label="Modifié le" value={new Date(selectedItem.updatedAt).toLocaleString()} />
+                    <Detail label={t("stock.category")} value={selectedItem.category} />
+                    <Detail label={t("stock.quantity")} value={`${selectedItem.quantity} ${selectedItem.unit}`} />
+                    <Detail label={t("stock.location")} value={selectedItem.location} />
+                    <Detail label={t("stock.expirationDate")} value={selectedItem.expirationDate} />
+                    <Detail label={t("stock.minimumQuantity")} value={selectedItem.minimumQuantity.toString()} />
+                    <Detail label={t("stock.createdDate")} value={new Date(selectedItem.createdAt).toLocaleString()} />
+                    <Detail label={t("stock.updatedDate")} value={new Date(selectedItem.updatedAt).toLocaleString()} />
                   </div>
 
                   {selectedItem.notes && (
-                    <div className="rounded-xl border border-green-100 bg-green-50 p-4">
+                    <div className="rounded-xl border border-green-100 bg-green-50 p-4 dark:bg-slate-700 dark:border-slate-600">
                       <p className="mb-1 text-xs font-medium uppercase text-slate-500">
-                        Notes
+                        {t("stock.notes")}
                       </p>
                       <p className="text-slate-700">{selectedItem.notes}</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-slate-600">
+                <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-slate-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300">
                   Mode édition à brancher ici.
                 </div>
               )}

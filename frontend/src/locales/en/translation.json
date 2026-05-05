@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "FoodStock",
+    "subtitle": "Food stock management"
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "loginSubtitle": "Sign in to access your stock.",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign in",
+    "loading": "Signing in...",
+    "invalidFields": "Please fill in all fields.",
+    "invalidCredentials": "Invalid credentials."
+  },
+  "navbar": {
+    "logout": "Logout"
+  },
+  "stock": {
+    "title": "My food stock",
+    "search": "Search food...",
+    "allCategories": "All categories",
+    "allLocations": "All locations",
+    "expiredOnly": "Expired only",
+    "quantity": "Quantity",
+    "location": "Location",
+    "expirationDate": "Expiration date",
+    "minimumQuantity": "Minimum quantity",
+    "notes": "Notes",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "deleteConfirm": "Delete this food item?"
+  },
+  "expiration": {
+    "expired": "Expired",
+    "soon": "Expiring soon",
+    "ok": "OK",
+    "expiresIn": "Expires in {{count}} day(s)",
+    "expiredSince": "Expired {{count}} day(s) ago"
+  },
+  "food": {
+    "barcode": "Barcode",
+    "searchBarcode": "Search",
+    "barcodeSearching": "Searching...",
+    "scanCamera": "Scan",
+    "scanInProgress": "Scanning...",
+    "uploadImage": "Upload image",
+    "name": "Name",
+    "category": "Category",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "expirationDate": "Expiration date",
+    "location": "Location",
+    "minimumQuantity": "Minimum quantity",
+    "notes": "Notes",
+    "add": "Add food item",
+    "adding": "Adding..."
+  }
+}

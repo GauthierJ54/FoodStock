@@ -18,7 +18,6 @@ export async function getProductByBarcode(
   barcode: string
 ): Promise<OpenFoodFactsResponse> {
 
-  console.log("Fetching product for barcode:", barcode); // debug  
   const response = await fetch(
     `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=product_name,product_name_fr,categories,quantity,brands,image_url`
   );

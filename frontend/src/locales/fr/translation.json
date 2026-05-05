@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "FoodStock",
+    "subtitle": "Gestion de stock alimentaire"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "loginSubtitle": "Connecte-toi pour accéder à ton stock.",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "loginButton": "Se connecter",
+    "loading": "Connexion...",
+    "invalidFields": "Veuillez remplir tous les champs.",
+    "invalidCredentials": "Identifiants incorrects."
+  },
+  "navbar": {
+    "logout": "Se déconnecter"
+  },
+  "stock": {
+    "title": "Mon stock alimentaire",
+    "search": "Rechercher un aliment...",
+    "allCategories": "Toutes les catégories",
+    "allLocations": "Tous les emplacements",
+    "expiredOnly": "Expirés uniquement",
+    "quantity": "Quantité",
+    "location": "Emplacement",
+    "expirationDate": "Date de péremption",
+    "minimumQuantity": "Quantité minimum",
+    "notes": "Notes",
+    "createdAt": "Créé le",
+    "updatedAt": "Modifié le",
+    "deleteConfirm": "Supprimer cet aliment ?"
+  },
+  "expiration": {
+    "expired": "Expiré",
+    "soon": "Bientôt expiré",
+    "ok": "OK",
+    "expiresIn": "Expire dans {{count}} jour(s)",
+    "expiredSince": "Expiré depuis {{count}} jour(s)"
+  },
+  "food": {
+    "barcode": "Code-barres",
+    "searchBarcode": "Rechercher",
+    "barcodeSearching": "Recherche...",
+    "scanCamera": "Scanner",
+    "scanInProgress": "Scan en cours...",
+    "uploadImage": "Importer une image",
+    "name": "Nom",
+    "category": "Catégorie",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "expirationDate": "Date de péremption",
+    "location": "Emplacement",
+    "minimumQuantity": "Quantité minimum",
+    "notes": "Notes",
+    "add": "Ajouter l’aliment",
+    "adding": "Ajout..."
+  }
+}
