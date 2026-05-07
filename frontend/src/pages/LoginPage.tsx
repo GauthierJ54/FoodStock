@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import type { SubmitEvent } from "react";
 import { Apple, Moon, Sun } from "lucide-react"
 import { useAuth } from "@/auth/useAuth";
@@ -8,6 +7,9 @@ import { loginSchema } from "@/schemas/auth.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@/theme/useTheme";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -16,6 +18,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
