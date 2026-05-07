@@ -1,20 +1,16 @@
 import { useState } from "react";
+
 import type { SubmitEvent } from "react";
-import { Apple, Moon, Sun } from "lucide-react";
+import { Apple, Moon, Sun } from "lucide-react"
 import { useAuth } from "@/auth/useAuth";
 import { loginApi } from "@/api/authAPI";
 import { loginSchema } from "@/schemas/auth.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
-import { useTheme } from "@/theme/useTheme";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
