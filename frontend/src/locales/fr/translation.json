@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "FoodStock",
+    "subtitle": "Gestion de stock alimentaire",
+    "loading": "Chargement..."
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "loginSubtitle": "Connecte-toi pour accéder à ton stock.",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "loginButton": "Se connecter",
+    "loading": "Connexion...",
+    "invalidFields": "Veuillez remplir tous les champs.",
+    "invalidCredentials": "Identifiants incorrects.",
+    "info": "Gérez votre stock alimentaire maison, suivez les dates d’expiration et ajoutez vos produits avec un code-barres.",
+    "card_1": "Stock clair et organisé",
+    "card_2": "Ajout rapide par code-barres",
+    "card_3": "Suivi des dates d’expiration"
+  },
+  "navbar": {
+    "logout": "Se déconnecter"
+  },
+  "dashboard": {
+    "eyebrow": "Dashboard",
+    "title": "Vue globale du stock",
+    "subtitle": "Synthèse des quantités, expirations, catégories, emplacements et alertes pour prioriser les actions.",
+    "manageStock": "Gérer le stock",
+    "loading": "Chargement du dashboard...",
+    "error": "Impossible de charger les données du stock.",
+    "metrics": {
+      "items": "Aliments",
+      "itemsDetail": "{{count}} catégorie(s)",
+      "expired": "Expirés",
+      "expiredDetail": "{{count}} bientôt expiré(s)",
+      "lowStock": "Stock bas",
+      "lowStockDetail": "{{percent}}% du stock OK",
+      "locations": "Emplacements",
+      "locationsDetail": "{{count}} unité(s) suivie(s)"
+    },
+    "charts": {
+      "category": {
+        "title": "Répartition par catégorie",
+        "description": "Nombre d'aliments par catégorie"
+      },
+      "expiration": {
+        "title": "État des expirations",
+        "description": "Expiré, bientôt expiré, OK"
+      },
+      "created": {
+        "title": "Ajouts dans le temps",
+        "description": "Volume d'aliments créés par mois"
+      },
+      "upcoming": {
+        "title": "Expirations à venir",
+        "description": "Aliments qui expirent sur les 30 prochains jours"
+      },
+      "locationQuantity": {
+        "title": "Quantités par emplacement",
+        "description": "Somme des quantités déclarées"
+      },
+      "stockHealth": {
+        "title": "Santé du stock",
+        "description": "Part du stock au-dessus du minimum"
+      },
+      "profile": {
+        "title": "Profil du stock",
+        "description": "Lecture rapide des zones de risque"
+      }
+    },
+    "labels": {
+      "items": "Aliments",
+      "created": "Ajouts",
+      "expirations": "Expirations",
+      "quantity": "Quantité",
+      "stockOk": "Stock OK",
+      "score": "Score",
+      "uncategorized": "Sans catégorie",
+      "unstored": "Non rangé"
+    },
+    "expiration": {
+      "expired": "Expirés",
+      "soon": "Bientôt",
+      "ok": "OK"
+    },
+    "profile": {
+      "categories": "Catégories",
+      "locations": "Emplacements",
+      "stock": "Stock OK",
+      "freshness": "Fraîcheur",
+      "volume": "Volume"
+    },
+    "timeline": {
+      "days": "{{from}}-{{to}}j"
+    },
+    "lists": {
+      "empty": "Rien à signaler.",
+      "expiration": {
+        "title": "Priorités expiration",
+        "description": "À consommer en premier"
+      },
+      "stock": {
+        "title": "Priorités stock",
+        "description": "Sous le seuil minimum"
+      }
+    }
+  },
+  "recipes": {
+    "title": "Création de recettes",
+    "subtitle": "Découvrez des recettes basées sur votre stock et réduisez les déchets.",
+    "loading": "Chargement des recettes...",
+    "error": "Impossible de charger les recettes.",
+    "eyebrow": "Recettes"
+  },
+  "stock": {
+    "eyebrow": "Stock",
+    "title": "Mon stock alimentaire",
+    "subtitle": "Gérez votre stock alimentaire, suivez les dates d’expiration et ajoutez vos produits avec un code-barres.",
+    "search": "Rechercher un aliment...",
+    "allCategories": "Toutes les catégories",
+    "allLocations": "Tous les emplacements",
+    "expiredOnly": "Expirés",
+    "quantity": "Quantité",
+    "location": "Emplacement",
+    "expirationDate": "Date de péremption",
+    "minimumQuantity": "Quantité minimum",
+    "minimumShort": "Minimum",
+    "notes": "Notes",
+    "createdAt": "Créé le",
+    "updatedAt": "Modifié le",
+    "deleteConfirm": "Supprimer cet aliment ?",
+    "delete": "Supprimer l’aliment",
+    "category": "Catégorie",
+    "filters": "Filtres",
+    "openFilters": "Filtres",
+    "closeFilters": "Fermer les filtres",
+    "resetFilters": "Réinitialiser",
+    "resultsCount": "{{count}} sur {{total}} aliment(s)",
+    "searchLabel": "Recherche",
+    "expirationStatus": "Expiration",
+    "allExpirationStatuses": "Tous les statuts",
+    "stockLevel": "Niveau de stock",
+    "allStockLevels": "Tous les niveaux",
+    "lowStock": "Stock bas",
+    "stockOk": "Stock suffisant",
+    "sortBy": "Trier par",
+    "sortName": "Nom A-Z",
+    "sortExpiration": "Date de péremption",
+    "sortQuantity": "Quantité croissante",
+    "expirationFilter": {
+      "expired": "Expiré",
+      "soon": "Bientôt expiré",
+      "ok": "OK"
+    },
+    "stockFilter": {
+      "low": "Stock bas",
+      "ok": "Stock suffisant"
+    },
+    "sort": {
+      "expiration": "Date de péremption",
+      "quantity": "Quantité",
+      "name": "Nom"
+    }
+  },
+  "expiration": {
+    "expired": "Expiré",
+    "soon": "Bientôt expiré",
+    "ok": "OK",
+    "expiresIn": "Expire dans {{count}} jour(s)",
+    "expiredSince": "Expiré depuis {{count}} jour(s)",
+    "expiresToday": "Expire aujourd'hui"
+  },
+  "food": {
+    "barcode": "Code-barres",
+    "searchBarcode": "Rechercher",
+    "barcodeSearching": "Recherche...",
+    "scanCamera": "Scanner",
+    "scanInProgress": "Scan en cours...",
+    "loadingScanner": "Chargement du scanner...",
+    "uploadImage": "Importer une image",
+    "name": "Nom",
+    "category": "Catégorie",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "expirationDate": "Date de péremption",
+    "location": "Emplacement",
+    "minimumQuantity": "Quantité minimum",
+    "notes": "Notes",
+    "add": "Ajouter l’aliment",
+    "adding": "Ajout...",
+    "open": "Ouvrir le formulaire",
+    "close": "Fermer le formulaire",
+    "newLocation": "Nouvel emplacement",
+    "newCategory": "Nouvelle catégorie"
+  }
+}

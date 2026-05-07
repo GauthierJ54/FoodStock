@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
-import { Apple } from "lucide-react";
+
+import type { SubmitEvent } from "react";
+import { Apple, Moon, Sun } from "lucide-react"
 import { useAuth } from "@/auth/useAuth";
 import { loginApi } from "@/api/authAPI";
 import { loginSchema } from "@/schemas/auth.schema";
@@ -14,14 +15,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const result = loginSchema.safeParse({ username, password });
 
     if (!result.success) {
-      setError("Veuillez remplir tous les champs.");
+      setError(result.error.issues.map((issue) => issue.message).join(", "));
       return;
     }
 
@@ -31,75 +33,92 @@ export default function LoginPage() {
     try {
       const response = await loginApi(username.trim(), password.trim());
       login(response.accessToken, username.trim());
-    } catch { 
-      setError("Identifiants incorrects.");
+      navigate("/");
+    } catch {
+      setError(t("auth.invalidCredentials"));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-green-50 text-slate-900">
+    <div className="min-h-screen bg-green-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
       <div className="mx-auto grid min-h-screen max-w-6xl items-center gap-10 px-6 lg:grid-cols-2">
         <section className="hidden lg:block">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-700 shadow-sm">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-700 shadow-sm dark:bg-slate-700 dark:text-slate-300">
             <Apple className="h-8 w-8" />
           </div>
 
-          <h1 className="text-5xl font-bold tracking-tight text-slate-950">
+          <h1 className="text-5xl font-bold tracking-tight text-slate-950 dark:text-slate-100">
             FoodStock
           </h1>
 
-          <p className="mt-4 max-w-md text-lg text-slate-600">
-            Gérez votre stock alimentaire maison, suivez les dates d’expiration
-            et ajoutez vos produits avec un code-barres.
+          <p className="mt-4 max-w-md text-lg text-slate-600 dark:text-slate-400">
+            {t("auth.info")}
           </p>
 
           <div className="mt-8 grid max-w-md gap-3">
-            <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm">
-              🥕 Stock clair et organisé
+            <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm dark:bg-slate-700 dark:text-slate-300">
+              🥕 {t("auth.card_1")}
             </div>
-            <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm">
-              📦 Ajout rapide par code-barres
+            <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm dark:bg-slate-700 dark:text-slate-300">
+              📦 {t("auth.card_2")}
             </div>
-            <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm">
-              ⏰ Suivi des dates d’expiration
+            <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm dark:bg-slate-700 dark:text-slate-300">
+              ⏰ {t("auth.card_3")}
             </div>
           </div>
         </section>
 
-        <Card className="border-green-100 bg-white/90 shadow-xl">
+        <Card className="border-green-100 bg-white/90 shadow-xl dark:bg-slate-800 dark:border-slate-600">
           <CardHeader className="space-y-2 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+            <div className="flex justify-end">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => i18n.changeLanguage(i18n.language === "fr" ? "en" : "fr")}
+                className="hover:bg-green-100 dark:hover:bg-slate-700"
+              >
+                {i18n.language === "fr" ? "EN" : "FR"}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+              >
+                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
+            </div>
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-700 dark:bg-slate-700 dark:text-slate-300">
               <Apple className="h-7 w-7" />
             </div>
 
-            <CardTitle className="text-2xl">Connexion</CardTitle>
+            <CardTitle className="text-2xl">{t("auth.loginTitle")}</CardTitle>
 
-            <p className="text-sm text-slate-500">
-              Connecte-toi pour accéder à ton stock.
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {t("auth.loginSubtitle")}
             </p>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
-                placeholder="Nom d'utilisateur"
+                placeholder={t("auth.username")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="h-11 border-green-100 bg-green-50/50"
+                className="h-11 border-green-100 bg-green-50/50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300"
               />
 
               <Input
                 type="password"
-                placeholder="Mot de passe"
+                placeholder={t("auth.password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-11 border-green-100 bg-green-50/50"
+                className="h-11 border-green-100 bg-green-50/50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300"
               />
 
               {error && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900 dark:text-red-300">
                   {error}
                 </p>
               )}
@@ -107,9 +126,9 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="h-11 w-full bg-green-600 text-white hover:bg-green-700"
+                className="h-11 w-full bg-green-600 text-white hover:bg-green-700 disabled:bg-green-300 disabled:hover:bg-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:disabled:bg-green-300 dark:disabled:hover:bg-green-300"
               >
-                {isLoading ? "Connexion..." : "Se connecter"}
+                {isLoading ? t("auth.loading") : t("auth.loginButton")}
               </Button>
             </form>
           </CardContent>

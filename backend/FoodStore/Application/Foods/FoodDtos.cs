@@ -5,7 +5,7 @@ public sealed record CreateFoodRequest(
     string? Category,
     decimal Quantity,
     string Unit,
-    DateOnly? ExpirationDate,
+    DateTime? ExpirationDate,
     string? Location,
     decimal? MinimumQuantity,
     string? Notes);
@@ -15,7 +15,7 @@ public sealed record UpdateFoodRequest(
     string? Category,
     decimal Quantity,
     string Unit,
-    DateOnly? ExpirationDate,
+    DateTime? ExpirationDate,
     string? Location,
     decimal? MinimumQuantity,
     string? Notes);

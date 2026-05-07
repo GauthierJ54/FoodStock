@@ -6,7 +6,7 @@ public sealed record FoodItem(
     string? Category,
     decimal Quantity,
     string Unit,
-    DateOnly? ExpirationDate,
+    DateTime? ExpirationDate,
     string? Location,
     decimal? MinimumQuantity,
     string? Notes,

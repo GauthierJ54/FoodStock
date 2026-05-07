@@ -1,11 +1,12 @@
 using System.Text.Json;
 using FoodStore.Application.Auth;
+using FoodStore.Application.Foods;
 using FoodStore.Domain.Foods;
 using Microsoft.Extensions.Options;
 
-namespace FoodStore.Infrastructure.Files;
+namespace FoodStore.Infrastructure.Persistence.Files;
 
-public sealed class FlatFileFoodRepository : IFoodRepository
+public sealed class FlatFileFoodRepository : IFoodReadRepository, IFoodWriteRepository
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -35,7 +36,7 @@ public sealed class FlatFileFoodRepository : IFoodRepository
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<FoodItem>> ListAsync(FoodFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<FoodReadModel>> ListAsync(FoodFilter filter, CancellationToken cancellationToken)
     {
         await _fileLock.WaitAsync(cancellationToken);
 
@@ -44,7 +45,7 @@ public sealed class FlatFileFoodRepository : IFoodRepository
             var dataPath = GetCurrentUserDataPath();
             var foods = await ReadAllUnsafeAsync(dataPath, cancellationToken);
             var query = foods.AsEnumerable();
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateTime.UtcNow;
 
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
@@ -79,8 +80,9 @@ public sealed class FlatFileFoodRepository : IFoodRepository
             }
 
             return query
-                .OrderBy(food => food.ExpirationDate ?? DateOnly.MaxValue)
+                .OrderBy(food => food.ExpirationDate ?? DateTime.MaxValue)
                 .ThenBy(food => food.Name)
+                .Select(FoodReadModel.FromDomain)
                 .ToArray();
         }
         finally
@@ -89,7 +91,26 @@ public sealed class FlatFileFoodRepository : IFoodRepository
         }
     }
 
-    public async Task<FoodItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<FoodReadModel?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _fileLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            var dataPath = GetCurrentUserDataPath();
+            var foods = await ReadAllUnsafeAsync(dataPath, cancellationToken);
+
+            var food = foods.FirstOrDefault(food => food.Id == id);
+
+            return food is null ? null : FoodReadModel.FromDomain(food);
+        }
+        finally
+        {
+            _fileLock.Release();
+        }
+    }
+
+    public async Task<FoodItem?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
     {
         await _fileLock.WaitAsync(cancellationToken);
 

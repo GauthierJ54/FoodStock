@@ -1,54 +1,15 @@
 [
   {
-    "id": "80d2f004-4334-46be-8357-18d32ed6dcc5",
+    "id": "1fb11cca-2bd3-4ccc-a86e-3cfb67fb60d0",
     "name": "Red bull",
     "category": "Boissons",
-    "quantity": 1,
-    "unit": "grammes",
-    "expirationDate": "2026-05-01",
-    "location": "frigo",
-    "minimumQuantity": 0,
-    "notes": "Marque: Red Bull",
-    "createdAt": "2026-05-03T16:42:39.5986749+00:00",
-    "updatedAt": "2026-05-03T16:42:39.5986749+00:00"
-  },
-  {
-    "id": "20eccb04-1782-4270-bbe3-714816f787aa",
-    "name": "sdfg",
-    "category": "dfg",
-    "quantity": 1,
-    "unit": "grammes",
-    "expirationDate": "2026-05-22",
-    "location": "frigo",
-    "minimumQuantity": 0,
-    "notes": "dfg",
-    "createdAt": "2026-05-03T16:58:30.1529316+00:00",
-    "updatedAt": "2026-05-03T16:58:30.1529316+00:00"
-  },
-  {
-    "id": "ce3152ba-588a-43de-a783-3b5f452c9a6b",
-    "name": "sdf",
-    "category": "sdf",
-    "quantity": 1,
-    "unit": "grammes",
-    "expirationDate": "2026-05-04",
-    "location": "frigo",
-    "minimumQuantity": 0,
-    "notes": null,
-    "createdAt": "2026-05-03T16:59:27.9978411+00:00",
-    "updatedAt": "2026-05-03T16:59:27.9978411+00:00"
-  },
-  {
-    "id": "199620b7-784d-4bb1-8fdf-913593af6c13",
-    "name": "aqwxs",
-    "category": "sdgver",
-    "quantity": 1,
-    "unit": "grammes",
-    "expirationDate": "2026-05-24",
-    "location": "frigo",
-    "minimumQuantity": 0,
-    "notes": "dfg",
-    "createdAt": "2026-05-03T16:59:50.5051908+00:00",
-    "updatedAt": "2026-05-03T16:59:50.5051908+00:00"
+    "quantity": 200,
+    "unit": "ml",
+    "expirationDate": "2026-05-07T13:58:22.715Z",
+    "location": "Placard",
+    "minimumQuantity": 10,
+    "notes": "Marque: Red Bull | Nutriscore: E",
+    "createdAt": "2026-05-07T13:58:46.9697076+00:00",
+    "updatedAt": "2026-05-07T13:58:46.9697076+00:00"
   }
 ]
