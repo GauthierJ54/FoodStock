@@ -1,4 +1,4 @@
-namespace FoodStore.Infrastructure.Files;
+namespace FoodStore.Infrastructure.Persistence.Files;
 
 public sealed class FlatFileOptions
 {

@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "FoodStock",
-    "subtitle": "Food stock management"
+    "subtitle": "Food stock management",
+    "loading": "Loading..."
   },
   "auth": {
     "loginTitle": "Login",
@@ -11,32 +12,162 @@
     "loginButton": "Sign in",
     "loading": "Signing in...",
     "invalidFields": "Please fill in all fields.",
-    "invalidCredentials": "Invalid credentials."
+    "invalidCredentials": "Invalid credentials.",
+    "info": "Manage your home food stock, track expiration dates, and add products with a barcode.",
+    "card_1": "Clear and organized stock",
+    "card_2": "Quick addition with barcode",
+    "card_3": "Expiration date tracking"
   },
   "navbar": {
     "logout": "Logout"
   },
+  "dashboard": {
+    "eyebrow": "Dashboard",
+    "title": "Stock overview",
+    "subtitle": "Summary of quantities, expirations, categories, locations, and alerts to prioritize actions.",
+    "manageStock": "Manage stock",
+    "loading": "Loading dashboard...",
+    "error": "Unable to load stock data.",
+    "metrics": {
+      "items": "Food items",
+      "itemsDetail": "{{count}} category/categories",
+      "expired": "Expired",
+      "expiredDetail": "{{count}} expiring soon",
+      "lowStock": "Low stock",
+      "lowStockDetail": "{{percent}}% stock OK",
+      "locations": "Locations",
+      "locationsDetail": "{{count}} tracked unit(s)"
+    },
+    "charts": {
+      "category": {
+        "title": "Category breakdown",
+        "description": "Number of food items per category"
+      },
+      "expiration": {
+        "title": "Expiration status",
+        "description": "Expired, expiring soon, OK"
+      },
+      "created": {
+        "title": "Additions over time",
+        "description": "Food items created per month"
+      },
+      "upcoming": {
+        "title": "Upcoming expirations",
+        "description": "Food items expiring in the next 30 days"
+      },
+      "locationQuantity": {
+        "title": "Quantities by location",
+        "description": "Sum of declared quantities"
+      },
+      "stockHealth": {
+        "title": "Stock health",
+        "description": "Share of stock above the minimum"
+      },
+      "profile": {
+        "title": "Stock profile",
+        "description": "Quick view of risk areas"
+      }
+    },
+    "labels": {
+      "items": "Food items",
+      "created": "Additions",
+      "expirations": "Expirations",
+      "quantity": "Quantity",
+      "stockOk": "Stock OK",
+      "score": "Score",
+      "uncategorized": "Uncategorized",
+      "unstored": "Unstored"
+    },
+    "expiration": {
+      "expired": "Expired",
+      "soon": "Soon",
+      "ok": "OK"
+    },
+    "profile": {
+      "categories": "Categories",
+      "locations": "Locations",
+      "stock": "Stock OK",
+      "freshness": "Freshness",
+      "volume": "Volume"
+    },
+    "timeline": {
+      "days": "{{from}}-{{to}}d"
+    },
+    "lists": {
+      "empty": "Nothing to report.",
+      "expiration": {
+        "title": "Expiration priorities",
+        "description": "Use these first"
+      },
+      "stock": {
+        "title": "Stock priorities",
+        "description": "Below minimum threshold"
+      }
+    }
+  },
+  "recipes": {
+    "title": "Create Recipes",
+    "subtitle": "Discover recipes based on your stock and reduce waste.",
+    "loading": "Loading recipes...",
+    "error": "Unable to load recipes.",
+    "eyebrow": "Recipes"},
   "stock": {
+    "eyebrow": "Stock",
+    "subtitle": "Manage your food stock, track expiration dates, and add products with a barcode.",
     "title": "My food stock",
     "search": "Search food...",
     "allCategories": "All categories",
     "allLocations": "All locations",
-    "expiredOnly": "Expired only",
+    "expiredOnly": "Expired",
     "quantity": "Quantity",
     "location": "Location",
     "expirationDate": "Expiration date",
     "minimumQuantity": "Minimum quantity",
+    "minimumShort": "Minimum",
     "notes": "Notes",
     "createdAt": "Created at",
     "updatedAt": "Updated at",
-    "deleteConfirm": "Delete this food item?"
+    "deleteConfirm": "Delete this food item?",
+    "delete": "Delete food item",
+    "category": "Category",
+    "filters": "Filters",
+    "openFilters": "Filters",
+    "closeFilters": "Close filters",
+    "resetFilters": "Reset",
+    "resultsCount": "{{count}} of {{total}} item(s)",
+    "searchLabel": "Search",
+    "expirationStatus": "Expiration",
+    "allExpirationStatuses": "All statuses",
+    "stockLevel": "Stock level",
+    "allStockLevels": "All levels",
+    "lowStock": "Low stock",
+    "stockOk": "Enough stock",
+    "sortBy": "Sort by",
+    "sortName": "Name A-Z",
+    "sortExpiration": "Expiration date",
+    "sortQuantity": "Quantity ascending",
+    "expirationFilter": {
+      "expired": "Expired",
+      "soon": "Expiring soon",
+      "ok": "OK"
+    },
+    "stockFilter": {
+      "low": "Low stock",
+      "ok": "Enough stock"
+    },
+    "sort": {
+      "expiration": "Expiration date",
+      "quantity": "Quantity",
+      "name": "Name"
+    }
   },
   "expiration": {
     "expired": "Expired",
     "soon": "Expiring soon",
     "ok": "OK",
     "expiresIn": "Expires in {{count}} day(s)",
-    "expiredSince": "Expired {{count}} day(s) ago"
+    "expiredSince": "Expired {{count}} day(s) ago",
+    "expiresToday": "Expires today"
   },
   "food": {
     "barcode": "Barcode",
@@ -44,6 +175,7 @@
     "barcodeSearching": "Searching...",
     "scanCamera": "Scan",
     "scanInProgress": "Scanning...",
+    "loadingScanner": "Loading scanner...",
     "uploadImage": "Upload image",
     "name": "Name",
     "category": "Category",
@@ -54,6 +186,10 @@
     "minimumQuantity": "Minimum quantity",
     "notes": "Notes",
     "add": "Add food item",
-    "adding": "Adding..."
+    "adding": "Adding...",
+    "open": "Open form",
+    "close": "Close form",
+    "newLocation": "New location",
+    "newCategory": "New category"
   }
 }

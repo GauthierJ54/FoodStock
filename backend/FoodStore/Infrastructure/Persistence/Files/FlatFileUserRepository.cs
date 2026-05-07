@@ -4,7 +4,7 @@ using FoodStore.Application.Auth;
 using FoodStore.Domain.Users;
 using Microsoft.Extensions.Options;
 
-namespace FoodStore.Infrastructure.Files;
+namespace FoodStore.Infrastructure.Persistence.Files;
 
 public sealed class FlatFileUserRepository : IUserRepository
 {

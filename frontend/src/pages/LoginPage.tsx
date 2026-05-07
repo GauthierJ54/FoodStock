@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/useTheme";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ export default function LoginPage() {
     const result = loginSchema.safeParse({ username, password });
 
     if (!result.success) {
-      setError(t("auth.invalidFields"));
+      setError(result.error.issues.map((issue) => issue.message).join(", "));
       return;
     }
 
@@ -35,6 +37,7 @@ export default function LoginPage() {
     try {
       const response = await loginApi(username.trim(), password.trim());
       login(response.accessToken, username.trim());
+      navigate("/");
     } catch {
       setError(t("auth.invalidCredentials"));
     } finally {
@@ -55,19 +58,18 @@ export default function LoginPage() {
           </h1>
 
           <p className="mt-4 max-w-md text-lg text-slate-600 dark:text-slate-400">
-            Gérez votre stock alimentaire maison, suivez les dates d’expiration
-            et ajoutez vos produits avec un code-barres.
+            {t("auth.info")}
           </p>
 
           <div className="mt-8 grid max-w-md gap-3">
             <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm dark:bg-slate-700 dark:text-slate-300">
-              🥕 Stock clair et organisé
+              🥕 {t("auth.card_1")}
             </div>
             <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm dark:bg-slate-700 dark:text-slate-300">
-              📦 Ajout rapide par code-barres
+              📦 {t("auth.card_2")}
             </div>
             <div className="rounded-2xl border border-green-100 bg-white/70 p-4 shadow-sm dark:bg-slate-700 dark:text-slate-300">
-              ⏰ Suivi des dates d’expiration
+              ⏰ {t("auth.card_3")}
             </div>
           </div>
         </section>
