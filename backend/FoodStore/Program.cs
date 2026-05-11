@@ -107,15 +107,12 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("Frontend");
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodStore API v1");
-        options.RoutePrefix = "swagger";
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodStore API v1");
+    options.RoutePrefix = "swagger";
+});
 
 app.UseMiddleware<JwtAuthenticationMiddleware>();
 
