@@ -68,7 +68,7 @@ export default function BarcodeScanner({ onDetected }: Props) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
         <Button type="button" onClick={startCameraScan} disabled={isScanning}>
             <Barcode />
         </Button>
@@ -91,7 +91,7 @@ export default function BarcodeScanner({ onDetected }: Props) {
         {isScanning && (
             <video
             ref={videoRef}
-            className="w-full rounded-xl border border-green-100"
+            className="max-h-64 w-full basis-full rounded-xl border border-green-100 object-cover"
             />
         )}
     </div>

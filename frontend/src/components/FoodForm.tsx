@@ -1,13 +1,16 @@
 import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { toast } from "sonner";
 import { enGB, fr } from "react-day-picker/locale"
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import type { FoodItem, CreateFoodItemRequest } from "@/api/stockAPI";
 import { getProductByBarcode } from "@/api/OpenFoodsFactsAPI";
 import { useTranslation } from "react-i18next";
+import { foodSchema } from "@/schemas/food.schema";
+import type { CreateFoodItemRequest, FoodItem } from "@/api/generated/foodstockapi/stockAPI";
+
 
 const BarcodeScanner = lazy(
   () => import("@/components/BarcodeScanner")
@@ -24,7 +27,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState<number | undefined>(undefined);
   const [unit, setUnit] = useState("");
-  const [expirationDate, setExpirationDate] = useState<Date | undefined>(new Date());
+  const [expirationDate, setExpirationDate] = useState<Date>(new Date());
   const [location, setLocation] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [customLocation, setCustomLocation] = useState("");
@@ -34,28 +37,35 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
   const [barcode, setBarcode] = useState("");
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const selectedCategory = category.trim() === "custom" ? customCategory.trim() : category.trim();
+    const selectedLocation = location.trim() === "custom" ? customLocation.trim() : location.trim();
 
-    if (!name.trim()) return;
-    if (!category.trim()) return;
-    if (!expirationDate) return;
-    if (!location.trim()) return;
+    const data = {
+      name: name.trim(),
+      category: selectedCategory,
+      quantity: quantity,
+      unit: unit.trim(),
+      expirationDate: formatDateOnly(expirationDate),
+      location: selectedLocation,
+      minimumQuantity: minimumQuantity,
+      notes: notes.trim() || undefined,
+    };
+
+    const result = foodSchema.safeParse(data);
+
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        toast.error(issue.message);
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
-      
-      await onSubmit({
-        name: name.trim(),
-        category: category.trim() === "custom" ? customCategory.trim() : category.trim(),
-        quantity: quantity || 1,
-        unit: unit.trim(),
-        expirationDate: expirationDate.toISOString(),
-        location: location.trim() === "custom" ? customLocation.trim() : location.trim(),
-        minimumQuantity: minimumQuantity || 0,
-        notes: notes.trim() || undefined,
-      });
+      await onSubmit(result.data as CreateFoodItemRequest);
 
       setName("");
       setCategory("");
@@ -89,9 +99,9 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
       const detectedCategory = product.categories?.split(",")[0]?.trim() || "";
       const categoryExists = items.some(
         (item) =>
-          item.category.toLowerCase() === detectedCategory.toLowerCase()
+          item.category?.toLowerCase() === detectedCategory.toLowerCase()
       );
-      
+
 
       setName(product.product_name || "");
       setQuantity(parseFloat(product.product_quantity || "0") || undefined);
@@ -102,7 +112,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
       } else {
         setCategory("custom");
         setCustomCategory(detectedCategory);
-      } 
+      }
       setNotes(product.brands ? `Marque: ${product.brands}` : "");
       setNotes((prev) => prev + (product.nutriscore_grade ? ` | Nutriscore: ${product.nutriscore_grade.toUpperCase()}` : ""));
     } catch (error) {
@@ -116,13 +126,13 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-6 rounded-2xl border border-green-100 bg-white p-4 shadow-sm dark:bg-slate-700 dark:border-slate-600"
+      className="mb-6 rounded-2xl border border-green-100 bg-white p-3 shadow-sm dark:bg-slate-700 dark:border-slate-600 sm:p-4"
     >
-      <div className="flex gap-2 md:col-span-2 lg:col-span-4 border-b border-green-100 pb-4 dark:border-slate-600">
+      <div className="flex flex-col gap-2 border-b border-green-100 pb-4 dark:border-slate-600 sm:flex-row sm:items-center md:col-span-2 lg:col-span-4">
         <Input
           placeholder={t("food.barcode")}
           value={barcode}
-          className="border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
+          className="min-w-0 flex-1 border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
           onChange={(e) => setBarcode(e.target.value)}
         />
 
@@ -138,15 +148,15 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
         <Button
           type="button"
           onClick={handleBarcodeSearch}
-          className="lg:col-span-4 bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+          className="w-full bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 sm:w-auto lg:col-span-4"
           disabled={isSearchingBarcode}
         >
           {isSearchingBarcode ? t("food.barcodeSearching") : t("food.searchBarcode")}
         </Button>
       </div>
-      <div className="grid gap-4 mt-4 md:grid-cols-1 lg:grid-cols-4">
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(260px,1fr)]">
 
-        <div className="flex flex-col gap-4 md:col-span-2 lg:col-span-3">
+        <div className="flex min-w-0 flex-col gap-4">
           <Input
             placeholder={t("food.name")}
             value={name}
@@ -154,7 +164,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
             onChange={(e) => setName(e.target.value)}
           />
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger className="border-green-100 bg-green-50/50 w-full dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300">
                 <SelectValue placeholder={t("food.category")} />
@@ -163,7 +173,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
                 {items.map((item) => item.category)
                   .filter((cat, index, self) => cat && self.indexOf(cat) === index)
                   .map((cat) => (
-                    <SelectItem key={cat} value={cat}>
+                    <SelectItem key={cat} value={cat || ""}>
                       {cat}
                     </SelectItem>
                   ))}
@@ -177,13 +187,13 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
               <Input
                 placeholder={t("food.newCategory")}
                 value={customCategory}
-                className="border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
+                className="w-full border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
                 onChange={(e) => setCustomCategory(e.target.value)}
               />
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               type="number"
               placeholder={t("food.quantity")}
@@ -205,7 +215,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
             </Select>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Select value={location} onValueChange={setLocation}>
               <SelectTrigger className="border-green-100 bg-green-50/50 w-full dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300">
                 <SelectValue placeholder={t("food.location")} />
@@ -214,7 +224,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
                 {items.map((item) => item.location)
                   .filter((loc, index, self) => loc && self.indexOf(loc) === index)
                   .map((loc) => (
-                    <SelectItem key={loc} value={loc}>
+                    <SelectItem key={loc} value={loc || ""}>
                       {loc}
                     </SelectItem>
                   ))}
@@ -228,7 +238,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
               <Input
                 placeholder={t("food.newLocation")}
                 value={customLocation}
-                className="border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
+                className="w-full border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
                 onChange={(e) => setCustomLocation(e.target.value)}
               />
             )}
@@ -251,7 +261,7 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
 
         </div>
 
-        <div className="flex flex-col gap-4 md:col-span-2 lg:col-span-1 border-green-100 bg-green-50/50 rounded-lg p-4 dark:border-slate-500 dark:bg-slate-600">
+        <div className="flex min-w-0 flex-col gap-4 overflow-x-auto rounded-lg border-green-100 bg-green-50/50 p-3 dark:border-slate-500 dark:bg-slate-600 sm:p-4">
           <Label htmlFor="expiration-date" className="text-sm font-medium text-green-700 dark:text-slate-300">
             {t("food.expirationDate")}
           </Label>
@@ -260,15 +270,15 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
             selected={expirationDate ? new Date(expirationDate) : undefined}
             onSelect={(date) => {
               if (!date) {
-                setExpirationDate(undefined);
+                setExpirationDate(new Date(Date.now()));
                 return;
               }
-              const selectedDate = new Date(date);            
+              const selectedDate = new Date(date);
               selectedDate.setHours(-(selectedDate.getTimezoneOffset() / 60));
               setExpirationDate(selectedDate);
             }}
             locale={i18n.language === "fr" ? fr : enGB}
-            className="border-green-100 bg-green-50/50 rounded-lg w-full dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
+            className="mx-auto w-full max-w-full rounded-lg border-green-100 bg-green-50/50 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-300"
           />
         </div>
       </div>
@@ -277,4 +287,12 @@ export default function FoodForm({ onSubmit, items }: FoodFormProps) {
       </Button>
     </form>
   );
+}
+
+function formatDateOnly(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }

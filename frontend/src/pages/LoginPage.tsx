@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { Apple, Moon, Sun } from "lucide-react"
 import { useAuth } from "@/auth/useAuth";
-import { loginApi } from "@/api/authAPI";
 import { loginSchema } from "@/schemas/auth.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/useTheme";
+import { z } from "zod";
+import { loginApi } from "@/api/generated/foodstockapi/authAPI";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -47,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-green-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
-      <div className="mx-auto grid min-h-screen max-w-6xl items-center gap-10 px-6 lg:grid-cols-2">
+      <div className="mx-auto grid min-h-screen max-w-6xl items-center gap-10 px-4 py-8 sm:px-6 lg:grid-cols-2">
         <section className="hidden lg:block">
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-700 shadow-sm dark:bg-slate-700 dark:text-slate-300">
             <Apple className="h-8 w-8" />
@@ -74,13 +75,16 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <Card className="border-green-100 bg-white/90 shadow-xl dark:bg-slate-800 dark:border-slate-600">
+        <Card className="w-full max-w-md justify-self-center border-green-100 bg-white/90 shadow-xl dark:bg-slate-800 dark:border-slate-600 lg:max-w-none">
           <CardHeader className="space-y-2 text-center">
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-1">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => i18n.changeLanguage(i18n.language === "fr" ? "en" : "fr")}
+                onClick={() => {
+                  i18n.changeLanguage(i18n.language === "fr" ? "en" : "fr")
+                  z.config(i18n.language === "fr" ? z.locales.en() : z.locales.fr())
+                }}
                 className="hover:bg-green-100 dark:hover:bg-slate-700"
               >
                 {i18n.language === "fr" ? "EN" : "FR"}

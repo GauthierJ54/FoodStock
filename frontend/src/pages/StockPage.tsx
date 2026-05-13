@@ -1,34 +1,34 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { getStock, deleteFoodItem } from "@/api/stockAPI";
-import type { FoodItem, CreateFoodItemRequest } from "@/api/stockAPI";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import FoodForm from "@/components/FoodForm";
-import { createFoodItem } from "@/api/stockAPI";
 import Navbar from "@/components/Navbar";
-import {
-  ArrowDownAZ,
-  CalendarClock,
-  Filter,
-  MapPin,
-  Package,
-  PackageCheck,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Search,
-  Tags,
-  Trash2,
-  Warehouse,
-  X,
-} from "lucide-react";
+import { CalendarClock, Filter, Package, Pencil, Plus, RotateCcw, Tags, Trash2, Warehouse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { createFoodItem, deleteFoodItem, getStock, type CreateFoodItemRequest, type FoodItem } from "@/api/generated/foodstockapi/stockAPI";
+import FiltersPanel from "@/components/FiltersPanel";
+
+type DetailProps = {
+  label: string;
+  value: string;
+};
+
+function Detail({ label, value }: DetailProps) {
+  return (
+    <div className="rounded-xl border border-green-100 bg-green-50 p-3 dark:border-slate-700 dark:bg-slate-800">
+      <p className="text-xs font-medium uppercase text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 font-medium text-slate-900 dark:text-slate-100">
+        {value}
+      </p>
+    </div>
+  );
+}
 
 export default function StockPage() {
   const { token } = useAuth();
@@ -73,7 +73,7 @@ export default function StockPage() {
   };
 
   const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name
+    const matchesSearch = item.name || ""
       .toLowerCase()
       .includes(search.toLowerCase());
 
@@ -83,7 +83,7 @@ export default function StockPage() {
     const matchesLocation =
       location === "all" || item.location === location;
 
-    const expirationStatus = getExpirationStatus(item.expirationDate);
+    const expirationStatus = getExpirationStatus(item.expirationDate || "");
     const matchesExpiration =
       expirationFilter === "all" || expirationStatus === expirationFilter;
 
@@ -96,14 +96,16 @@ export default function StockPage() {
     return matchesSearch && matchesCategory && matchesLocation && matchesExpiration && matchesStockLevel;
   }).sort((a, b) => {
     if (sortBy === "expiration") {
-      return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
+      return new Date(a.expirationDate || "").getTime() - new Date(b.expirationDate || "").getTime();
     }
 
     if (sortBy === "quantity") {
-      return a.quantity - b.quantity;
+      return (a.quantity || 0) - (b.quantity || 0);
     }
 
-    return a.name.localeCompare(b.name);
+    const nameA = a.name || "";
+    const nameB = b.name || "";
+    return nameA.localeCompare(nameB);
   });
 
   const handleCreate = async (data: CreateFoodItemRequest) => {
@@ -140,167 +142,6 @@ export default function StockPage() {
     if (diff < 0) return "expired";
     if (diff <= 3) return "soon";
     return "ok";
-  }
-
-  function Detail({ label, value }: { label: string; value: string }) {
-    return (
-      <div className="rounded-xl border border-green-100 bg-green-50 p-3 dark:bg-slate-800 dark:border-slate-700">
-        <p className="text-xs font-medium uppercase text-slate-500">
-          {label}
-        </p>
-        <p className="mt-1 font-medium text-slate-900">
-          {value}
-        </p>
-      </div>
-    );
-  }
-
-  function FiltersPanel() {
-    return (
-      <aside className="flex h-full w-80 max-w-[calc(100vw-2rem)] flex-col border-r border-green-100 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-green-100 p-4 dark:border-slate-700">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">
-              {t("stock.filters")}
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {t("stock.resultsCount", { count: filteredItems.length, total: items.length })}
-            </p>
-          </div>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsFiltersOpen(false)}
-            className="hover:bg-green-100 dark:hover:bg-slate-800"
-            aria-label={t("stock.closeFilters")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="flex-1 space-y-5 overflow-y-auto p-4">
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-              <Search className="h-4 w-4 text-green-700 dark:text-green-400" />
-              {t("stock.searchLabel")}
-            </label>
-            <Input
-              placeholder={t("stock.search")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border-green-200 bg-green-50/60 dark:border-slate-700 dark:bg-slate-800"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-              <Tags className="h-4 w-4 text-green-700 dark:text-green-400" />
-              {t("stock.category")}
-            </label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="border-green-200 bg-green-50/60 dark:border-slate-700 dark:bg-slate-800">
-                <SelectValue placeholder={t("stock.category")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("stock.allCategories")}</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-              <MapPin className="h-4 w-4 text-green-700 dark:text-green-400" />
-              {t("stock.location")}
-            </label>
-            <Select value={location} onValueChange={setLocation}>
-              <SelectTrigger className="border-green-200 bg-green-50/60 dark:border-slate-700 dark:bg-slate-800">
-                <SelectValue placeholder={t("stock.location")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("stock.allLocations")}</SelectItem>
-                {locations.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-              <CalendarClock className="h-4 w-4 text-green-700 dark:text-green-400" />
-              {t("stock.expirationStatus")}
-            </label>
-            <Select value={expirationFilter} onValueChange={setExpirationFilter}>
-              <SelectTrigger className="border-green-200 bg-green-50/60 dark:border-slate-700 dark:bg-slate-800">
-                <SelectValue placeholder={t("stock.expirationStatus")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("stock.allExpirationStatuses")}</SelectItem>
-                <SelectItem value="expired">{t("expiration.expired")}</SelectItem>
-                <SelectItem value="soon">{t("expiration.soon")}</SelectItem>
-                <SelectItem value="ok">{t("expiration.ok")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-              <PackageCheck className="h-4 w-4 text-green-700 dark:text-green-400" />
-              {t("stock.stockLevel")}
-            </label>
-            <Select value={stockLevelFilter} onValueChange={setStockLevelFilter}>
-              <SelectTrigger className="border-green-200 bg-green-50/60 dark:border-slate-700 dark:bg-slate-800">
-                <SelectValue placeholder={t("stock.stockLevel")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("stock.allStockLevels")}</SelectItem>
-                <SelectItem value="low">{t("stock.lowStock")}</SelectItem>
-                <SelectItem value="ok">{t("stock.stockOk")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-              <ArrowDownAZ className="h-4 w-4 text-green-700 dark:text-green-400" />
-              {t("stock.sortBy")}
-            </label>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="border-green-200 bg-green-50/60 dark:border-slate-700 dark:bg-slate-800">
-                <SelectValue placeholder={t("stock.sortBy")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">{t("stock.sortName")}</SelectItem>
-                <SelectItem value="expiration">{t("stock.sortExpiration")}</SelectItem>
-                <SelectItem value="quantity">{t("stock.sortQuantity")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="border-t border-green-100 p-4 dark:border-slate-700">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={resetFilters}
-            className="w-full border-green-200 bg-white hover:bg-green-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
-            disabled={activeFilterCount === 0}
-          >
-            <RotateCcw className="h-4 w-4" />
-            {t("stock.resetFilters")}
-          </Button>
-        </div>
-      </aside>
-    );
   }
 
   function getExpirationLabel(status: string, diffDays: number) {
@@ -406,7 +247,7 @@ export default function StockPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div className="rounded-lg border border-slate-100 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/50">
               <p className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
                 <Warehouse className="h-3.5 w-3.5" />
@@ -443,13 +284,13 @@ export default function StockPage() {
     <div className="min-h-screen bg-green-50 text-slate-900 dark:bg-slate-900 dark:text-slate-300">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl p-6">
+      <main className="mx-auto max-w-7xl p-4 sm:p-6">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium text-green-700 dark:text-green-400">
               {t("stock.eyebrow")}
             </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">
+            <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
               {t("stock.title")}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
@@ -479,7 +320,7 @@ export default function StockPage() {
           </CollapsibleContent>
         </Collapsible>
 
-        <div className="mb-6 flex flex-wraps gap-4 sm:flex-row">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button
             type="button"
             onClick={() => setIsFiltersOpen(true)}
@@ -493,7 +334,7 @@ export default function StockPage() {
               </Badge>
             )}
           </Button>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {t("stock.resultsCount", { count: filteredItems.length, total: items.length })}
           </p>
         </div>
@@ -511,7 +352,7 @@ export default function StockPage() {
             </Button>
           </div>
         )}
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filteredItems.map((item) => (
             <FoodCard key={item.id} item={item} />
           ))}
@@ -529,7 +370,27 @@ export default function StockPage() {
         <div
           className={`absolute inset-y-0 left-0 transition-transform duration-300 ease-out ${isFiltersOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
-          <FiltersPanel />
+          <FiltersPanel
+            search={search}
+            setSearch={setSearch}
+            category={category}
+            setCategory={setCategory}
+            location={location}
+            setLocation={setLocation}
+            categories={categories}
+            locations={locations}
+            items={items}
+            filteredItems={filteredItems}
+            expirationFilter={expirationFilter}
+            setExpirationFilter={setExpirationFilter}
+            stockLevelFilter={stockLevelFilter}
+            setStockLevelFilter={setStockLevelFilter}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            resetFilters={resetFilters}
+            activeFilterCount={activeFilterCount}
+            setIsFiltersOpen={setIsFiltersOpen}
+          />
         </div>
       </div>
 
@@ -542,7 +403,7 @@ export default function StockPage() {
           }
         }}
       >
-        <DialogContent className="border-green-100 bg-white sm:max-w-xl dark:bg-slate-800 dark:border-slate-600">
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-green-100 bg-white sm:max-w-xl dark:bg-slate-800 dark:border-slate-600">
           {selectedItem && (
             <>
               <DialogHeader>
@@ -564,11 +425,11 @@ export default function StockPage() {
 
               {!isEditMode ? (
                 <div className="space-y-4 text-sm dark:text-slate-300">
-                  <div className="grid grid-cols-2 gap-3 dark:text-slate-600">
+                  <div className="grid grid-cols-1 gap-3 dark:text-slate-600 sm:grid-cols-2">
                     <Detail label={t("stock.category")} value={selectedItem.category} />
                     <Detail label={t("stock.quantity")} value={`${selectedItem.quantity} ${selectedItem.unit}`} />
                     <Detail label={t("stock.location")} value={selectedItem.location} />
-                    <Detail label={t("stock.expirationDate")} value={selectedItem.expirationDate} />
+                    <Detail label={t("stock.expirationDate")} value={new Date(selectedItem.expirationDate).toLocaleDateString("fr-FR")} />
                     <Detail label={t("stock.minimumQuantity")} value={selectedItem.minimumQuantity.toString()} />
                     <Detail label={t("stock.createdAt")} value={new Date(selectedItem.createdAt).toLocaleString()} />
                     <Detail label={t("stock.updatedAt")} value={new Date(selectedItem.updatedAt).toLocaleString()} />

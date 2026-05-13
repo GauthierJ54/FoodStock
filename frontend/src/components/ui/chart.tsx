@@ -17,7 +17,7 @@ export function ChartContainer({
   children: ReactNode;
 }) {
   return (
-    <div className={cn("h-[280px] w-full text-sm", className)}>
+    <div className={cn("h-[240px] w-full text-sm sm:h-[280px]", className)}>
       {children}
     </div>
   );

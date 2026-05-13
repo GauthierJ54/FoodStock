@@ -1,39 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Label,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  PolarAngleAxis,
-  PolarGrid,
-  Radar,
-  RadarChart,
-  RadialBar,
-  RadialBarChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  AlertTriangle,
-  CalendarClock,
-  CheckCircle2,
-  Layers3,
-  Package,
-  PieChart as PieChartIcon,
-  TrendingUp,
-  Warehouse,
-} from "lucide-react";
-
-import { getStock, type FoodItem } from "@/api/stockAPI";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Label, Line, LineChart, Pie, PieChart, PolarAngleAxis, PolarGrid, Radar, RadarChart, RadialBar, RadialBarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AlertTriangle, CalendarClock, CheckCircle2, Layers3, Package, PieChart as PieChartIcon, TrendingUp, Warehouse } from "lucide-react";
 import { useAuth } from "@/auth/useAuth";
 import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +9,7 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getStock, type FoodItem } from "@/api/generated/foodstockapi/stockAPI";
 
 const chartColors = {
   green: "#16a34a",
@@ -58,17 +26,37 @@ function DashboardPage() {
   const { token } = useAuth();
   const { t, i18n } = useTranslation();
   const [items, setItems] = useState<FoodItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!token) return;
 
-    setIsLoading(true);
-    getStock(token)
-      .then(setItems)
-      .catch(() => setError(t("dashboard.error")))
-      .finally(() => setIsLoading(false));
+    let isCancelled = false;
+
+    async function loadStock() {
+      try {
+        setStatus("loading");
+
+        const data = await getStock(token as string);
+
+        if (isCancelled) return;
+
+        setItems(data);
+        setStatus("success");
+      } catch {
+        if (isCancelled) return;
+
+        setError(t("dashboard.error"));
+        setStatus("error");
+      }
+    }
+
+    void loadStock();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [token, t]);
 
   const dashboard = useMemo(() => buildDashboardData(items, t, i18n.language), [items, t, i18n.language]);
@@ -77,13 +65,13 @@ function DashboardPage() {
     <div className="min-h-screen bg-green-50 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl space-y-6 p-6">
+      <main className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
         <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-medium text-green-700 dark:text-green-400">
               {t("dashboard.eyebrow")}
             </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">
+            <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
               {t("dashboard.title")}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
@@ -91,7 +79,7 @@ function DashboardPage() {
             </p>
           </div>
 
-          <Button asChild className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">
+          <Button asChild className="w-full bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 sm:w-auto">
             <Link to="/stock">
               <Package className="h-4 w-4" />
               {t("dashboard.manageStock")}
@@ -99,7 +87,7 @@ function DashboardPage() {
           </Button>
         </section>
 
-        {isLoading ? (
+        {status === "loading" ? (
           <div className="rounded-xl border border-green-100 bg-white p-8 text-center text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
             {t("dashboard.loading")}
           </div>
@@ -111,7 +99,7 @@ function DashboardPage() {
           <>
             <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <MetricCard
-                title="Aliments"
+                title={t("dashboard.metrics.items")}
                 value={dashboard.totalItems}
                 detail={t("dashboard.metrics.itemsDetail", { count: dashboard.categoryCount })}
                 icon={<Package className="h-5 w-5" />}
@@ -233,10 +221,10 @@ function DashboardPage() {
               >
                 <ChartContainer>
                   <ResponsiveContainer>
-                    <BarChart data={dashboard.locationQuantityData} layout="vertical" margin={{ left: 16 }}>
+                    <BarChart data={dashboard.locationQuantityData} layout="vertical" margin={{ left: 4, right: 8 }}>
                       <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                       <XAxis type="number" tickLine={false} axisLine={false} />
-                      <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} width={90} />
+                      <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} width={72} />
                       <Tooltip content={<ChartTooltipContent config={{ quantity: { label: t("dashboard.labels.quantity"), color: chartColors.cyan } }} />} />
                       <Bar dataKey="quantity" radius={[0, 8, 8, 0]} fill={chartColors.cyan} />
                     </BarChart>
@@ -294,7 +282,7 @@ function DashboardPage() {
                 title={t("dashboard.lists.expiration.title")}
                 description={t("dashboard.lists.expiration.description")}
                 items={dashboard.expirationPriorities}
-                renderValue={(item) => item.expirationDate}
+                renderValue={(item) => new Date(item.expirationDate || "").toLocaleDateString("fr-FR")}
                 emptyLabel={t("dashboard.lists.empty")}
               />
 
@@ -407,12 +395,12 @@ function TopListCard({
             </p>
           ) : (
             items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950">
+              <div key={item.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <p className="truncate font-medium text-slate-950 dark:text-slate-100">{item.name}</p>
                   <p className="truncate text-xs text-slate-500 dark:text-slate-400">{item.category} - {item.location}</p>
                 </div>
-                <Badge variant="secondary" className="shrink-0">
+                <Badge variant="secondary" className="w-fit shrink-0">
                   {renderValue(item)}
                 </Badge>
               </div>
@@ -429,9 +417,9 @@ function buildDashboardData(items: FoodItem[], t: (key: string, options?: Record
   const inSevenDays = addDays(today, 7);
   const inThirtyDays = addDays(today, 30);
 
-  const expiredItems = items.filter((item) => parseDate(item.expirationDate) < today).length;
+  const expiredItems = items.filter((item) => parseDate(item.expirationDate || "") < today).length;
   const expiringSoonItems = items.filter((item) => {
-    const date = parseDate(item.expirationDate);
+    const date = parseDate(item.expirationDate || "");
     return date >= today && date <= inSevenDays;
   }).length;
   const healthyExpirationItems = Math.max(items.length - expiredItems - expiringSoonItems, 0);
@@ -455,7 +443,7 @@ function buildDashboardData(items: FoodItem[], t: (key: string, options?: Record
     ],
     createdByMonth: buildCreatedByMonth(items, language),
     expiringTimeline: buildExpiringTimeline(items, today, inThirtyDays, t),
-    locationQuantityData: topEntries(groupSum(items, (item) => item.location || t("dashboard.labels.unstored"), (item) => item.quantity), 8, "quantity"),
+    locationQuantityData: topEntries(groupSum(items, (item) => item.location || t("dashboard.labels.unstored"), (item) => item.quantity || 0), 8, "quantity"),
     stockHealthData: [{ name: t("dashboard.labels.stockOk"), value: stockHealthPercent, fill: chartColors.green }],
     profileData: [
       { name: t("dashboard.profile.categories"), value: score(new Set(items.map((item) => item.category)).size, 8) },
@@ -465,12 +453,12 @@ function buildDashboardData(items: FoodItem[], t: (key: string, options?: Record
       { name: t("dashboard.profile.volume"), value: score(items.length, 30) },
     ],
     expirationPriorities: [...items]
-      .filter((item) => parseDate(item.expirationDate) <= inThirtyDays)
-      .sort((a, b) => parseDate(a.expirationDate).getTime() - parseDate(b.expirationDate).getTime())
+      .filter((item) => parseDate(item.expirationDate || "") <= inThirtyDays)
+      .sort((a, b) => parseDate(a.expirationDate || "").getTime() - parseDate(b.expirationDate || "").getTime())
       .slice(0, 5),
     lowStockPriorities: [...items]
       .filter((item) => item.quantity <= item.minimumQuantity)
-      .sort((a, b) => (a.quantity - a.minimumQuantity) - (b.quantity - b.minimumQuantity))
+      .sort((a, b) => (Number(a.quantity || 0) - Number(a.minimumQuantity || 0)) - (Number(b.quantity || 0) - Number(b.minimumQuantity || 0)))
       .slice(0, 5),
   };
 }
@@ -532,7 +520,7 @@ function buildExpiringTimeline(
   return windows.map((window) => ({
     day: window.day,
     count: items.filter((item) => {
-      const expiration = parseDate(item.expirationDate);
+      const expiration = parseDate(item.expirationDate || "");
       return expiration >= window.from && expiration <= window.to;
     }).length,
   }));

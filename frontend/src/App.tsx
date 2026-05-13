@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -57,6 +58,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <Toaster richColors position="top-center" />
 
       <Analytics />
       <SpeedInsights />
